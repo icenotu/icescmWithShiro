@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icenotu.dao.SysUserMapper" >
+  <resultMap id="BaseResultMap" type="com.icenotu.entity.SysUser" >
+    <id column="us_id" property="usId" jdbcType="VARCHAR" />
+    <result column="us_username" property="usUsername" jdbcType="VARCHAR" />
+    <result column="us_password" property="usPassword" jdbcType="VARCHAR" />
+    <result column="us_salt" property="usSalt" jdbcType="VARCHAR" />
+    <result column="us_locked" property="usLocked" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    us_id, us_username, us_password, us_salt, us_locked
+  </sql>
+  <select id="selectWithCondition" parameterType="PageData" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/> FROM sys_user
+    <where>
+      <if test="keyword!='%%'">
+        OR us_username LIKE #{keyword}
+      </if>
+    </where>
+    limit #{start},#{length};
+  </select>
+
+  <select id="selectCountWithCondition" parameterType="PageData" resultType="Integer">
+    SELECT count(1) FROM sys_user
+    WHERE us_username LIKE #{keyword}
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.icenotu.entity.SysUserExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sys_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user
+    where us_id = #{usId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from sys_user
+    where us_id = #{usId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.icenotu.entity.SysUserExample" >
+    delete from sys_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.icenotu.entity.SysUser" >
+    insert into sys_user (us_id, us_username, us_password, 
+      us_salt, us_locked)
+    values (#{usId,jdbcType=VARCHAR}, #{usUsername,jdbcType=VARCHAR}, #{usPassword,jdbcType=VARCHAR}, 
+      #{usSalt,jdbcType=VARCHAR}, #{usLocked,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.icenotu.entity.SysUser" >
+    insert into sys_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="usId != null" >
+        us_id,
+      </if>
+      <if test="usUsername != null" >
+        us_username,
+      </if>
+      <if test="usPassword != null" >
+        us_password,
+      </if>
+      <if test="usSalt != null" >
+        us_salt,
+      </if>
+      <if test="usLocked != null" >
+        us_locked,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="usId != null" >
+        #{usId,jdbcType=VARCHAR},
+      </if>
+      <if test="usUsername != null" >
+        #{usUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="usPassword != null" >
+        #{usPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="usSalt != null" >
+        #{usSalt,jdbcType=VARCHAR},
+      </if>
+      <if test="usLocked != null" >
+        #{usLocked,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.icenotu.entity.SysUserExample" resultType="java.lang.Integer" >
+    select count(*) from sys_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update sys_user
+    <set >
+      <if test="record.usId != null" >
+        us_id = #{record.usId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.usUsername != null" >
+        us_username = #{record.usUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="record.usPassword != null" >
+        us_password = #{record.usPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.usSalt != null" >
+        us_salt = #{record.usSalt,jdbcType=VARCHAR},
+      </if>
+      <if test="record.usLocked != null" >
+        us_locked = #{record.usLocked,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update sys_user
+    set us_id = #{record.usId,jdbcType=VARCHAR},
+      us_username = #{record.usUsername,jdbcType=VARCHAR},
+      us_password = #{record.usPassword,jdbcType=VARCHAR},
+      us_salt = #{record.usSalt,jdbcType=VARCHAR},
+      us_locked = #{record.usLocked,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.icenotu.entity.SysUser" >
+    update sys_user
+    <set >
+      <if test="usUsername != null" >
+        us_username = #{usUsername,jdbcType=VARCHAR},
+      </if>
+      <if test="usPassword != null" >
+        us_password = #{usPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="usSalt != null" >
+        us_salt = #{usSalt,jdbcType=VARCHAR},
+      </if>
+      <if test="usLocked != null" >
+        us_locked = #{usLocked,jdbcType=BIT},
+      </if>
+    </set>
+    where us_id = #{usId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.icenotu.entity.SysUser" >
+    update sys_user
+    set us_username = #{usUsername,jdbcType=VARCHAR},
+      us_password = #{usPassword,jdbcType=VARCHAR},
+      us_salt = #{usSalt,jdbcType=VARCHAR},
+      us_locked = #{usLocked,jdbcType=BIT}
+    where us_id = #{usId,jdbcType=VARCHAR}
+  </update>
+</mapper>

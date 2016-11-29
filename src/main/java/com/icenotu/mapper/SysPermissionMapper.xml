@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icenotu.dao.SysPermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.icenotu.entity.SysPermission" >
+    <id column="pm_id" property="pmId" jdbcType="BIGINT" />
+    <result column="pm_name" property="pmName" jdbcType="VARCHAR" />
+    <result column="pm_type" property="pmType" jdbcType="VARCHAR" />
+    <result column="pm_url" property="pmUrl" jdbcType="VARCHAR" />
+    <result column="pm_percode" property="pmPercode" jdbcType="VARCHAR" />
+    <result column="pm_parentid" property="pmParentid" jdbcType="BIGINT" />
+    <result column="pm_parentids" property="pmParentids" jdbcType="VARCHAR" />
+    <result column="pm_status" property="pmStatus" jdbcType="BIT" />
+  </resultMap>
+  <!-- 根据用户id查询url -->
+  <select id="findPermissionListByUserId" parameterType="string" resultType="SysPermission">
+    SELECT
+    *
+    FROM
+    sys_permission
+    WHERE pm_type = 'permission'
+    AND pm_id IN
+    (SELECT
+    pm_id
+    FROM
+    sys_role_permission
+    WHERE rl_id IN
+    (SELECT
+    rl_id
+    FROM
+    sys_user_role
+    WHERE us_id = #{id}))
+  </select>
+
+  <!-- 查询url -->
+  <select id="findPermissionList" resultType="SysPermission">
+    SELECT
+    *
+    FROM
+    sys_permission
+    WHERE pm_type = 'permission'
+  </select>
+
+  <!-- 根据用户id查询一级菜单 -->
+  <select id="findFirstMenuListByUserId"  parameterType="string" resultType="SysPermission">
+    SELECT
+    *
+    FROM
+    sys_permission
+    WHERE pm_type = 'menu' AND pm_url IS NULL
+    AND pm_id IN
+    (SELECT
+    pm_id
+    FROM
+    sys_role_permission
+    WHERE rl_id IN
+    (SELECT
+    rl_id
+    FROM
+    sys_user_role
+    WHERE us_id = #{id}))
+  </select>
+
+  <!-- 查询一级菜单 -->
+  <select id="findFirstMenuList" resultType="SysPermission">
+    SELECT
+    *
+    FROM
+    sys_permission
+    WHERE pm_type = 'menu' AND pm_url IS NULL
+  </select>
+
+  <!-- 根据用户id查询二级菜单 -->
+  <select id="findSecondMenuListByUserId"  parameterType="string" resultType="SysPermission">
+    SELECT
+    *
+    FROM
+    sys_permission
+    WHERE pm_type = 'menu' AND pm_url IS NOT NULL
+    AND pm_id IN
+    (SELECT
+    pm_id
+    FROM
+    sys_role_permission
+    WHERE rl_id IN
+    (SELECT
+    rl_id
+    FROM
+    sys_user_role
+    WHERE us_id = #{id}))
+  </select>
+
+  <!-- 查询二级菜单 -->
+  <select id="findSecondMenuList"  resultType="SysPermission">
+    SELECT
+    *
+    FROM
+    sys_permission
+    WHERE pm_type = 'menu' AND pm_url IS NOT NULL
+  </select>
+
+
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    pm_id, pm_name, pm_type, pm_url, pm_percode, pm_parentid, pm_parentids, pm_status
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.icenotu.entity.SysPermissionExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sys_permission
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_permission
+    where pm_id = #{pmId,jdbcType=BIGINT}
+  </select>
+  <select id="select" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from sys_permission
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from sys_permission
+    where pm_id = #{pmId,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.icenotu.entity.SysPermissionExample" >
+    delete from sys_permission
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.icenotu.entity.SysPermission" >
+    insert into sys_permission (pm_id, pm_name, pm_type, 
+      pm_url, pm_percode, pm_parentid, 
+      pm_parentids, pm_status)
+    values (#{pmId,jdbcType=BIGINT}, #{pmName,jdbcType=VARCHAR}, #{pmType,jdbcType=VARCHAR}, 
+      #{pmUrl,jdbcType=VARCHAR}, #{pmPercode,jdbcType=VARCHAR}, #{pmParentid,jdbcType=BIGINT}, 
+      #{pmParentids,jdbcType=VARCHAR}, #{pmStatus,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.icenotu.entity.SysPermission" >
+    insert into sys_permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="pmId != null" >
+        pm_id,
+      </if>
+      <if test="pmName != null" >
+        pm_name,
+      </if>
+      <if test="pmType != null" >
+        pm_type,
+      </if>
+      <if test="pmUrl != null" >
+        pm_url,
+      </if>
+      <if test="pmPercode != null" >
+        pm_percode,
+      </if>
+      <if test="pmParentid != null" >
+        pm_parentid,
+      </if>
+      <if test="pmParentids != null" >
+        pm_parentids,
+      </if>
+      <if test="pmStatus != null" >
+        pm_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="pmId != null" >
+        #{pmId,jdbcType=BIGINT},
+      </if>
+      <if test="pmName != null" >
+        #{pmName,jdbcType=VARCHAR},
+      </if>
+      <if test="pmType != null" >
+        #{pmType,jdbcType=VARCHAR},
+      </if>
+      <if test="pmUrl != null" >
+        #{pmUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="pmPercode != null" >
+        #{pmPercode,jdbcType=VARCHAR},
+      </if>
+      <if test="pmParentid != null" >
+        #{pmParentid,jdbcType=BIGINT},
+      </if>
+      <if test="pmParentids != null" >
+        #{pmParentids,jdbcType=VARCHAR},
+      </if>
+      <if test="pmStatus != null" >
+        #{pmStatus,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.icenotu.entity.SysPermissionExample" resultType="java.lang.Integer" >
+    select count(*) from sys_permission
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update sys_permission
+    <set >
+      <if test="record.pmId != null" >
+        pm_id = #{record.pmId,jdbcType=BIGINT},
+      </if>
+      <if test="record.pmName != null" >
+        pm_name = #{record.pmName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pmType != null" >
+        pm_type = #{record.pmType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pmUrl != null" >
+        pm_url = #{record.pmUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pmPercode != null" >
+        pm_percode = #{record.pmPercode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pmParentid != null" >
+        pm_parentid = #{record.pmParentid,jdbcType=BIGINT},
+      </if>
+      <if test="record.pmParentids != null" >
+        pm_parentids = #{record.pmParentids,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pmStatus != null" >
+        pm_status = #{record.pmStatus,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update sys_permission
+    set pm_id = #{record.pmId,jdbcType=BIGINT},
+      pm_name = #{record.pmName,jdbcType=VARCHAR},
+      pm_type = #{record.pmType,jdbcType=VARCHAR},
+      pm_url = #{record.pmUrl,jdbcType=VARCHAR},
+      pm_percode = #{record.pmPercode,jdbcType=VARCHAR},
+      pm_parentid = #{record.pmParentid,jdbcType=BIGINT},
+      pm_parentids = #{record.pmParentids,jdbcType=VARCHAR},
+      pm_status = #{record.pmStatus,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.icenotu.entity.SysPermission" >
+    update sys_permission
+    <set >
+      <if test="pmName != null" >
+        pm_name = #{pmName,jdbcType=VARCHAR},
+      </if>
+      <if test="pmType != null" >
+        pm_type = #{pmType,jdbcType=VARCHAR},
+      </if>
+      <if test="pmUrl != null" >
+        pm_url = #{pmUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="pmPercode != null" >
+        pm_percode = #{pmPercode,jdbcType=VARCHAR},
+      </if>
+      <if test="pmParentid != null" >
+        pm_parentid = #{pmParentid,jdbcType=BIGINT},
+      </if>
+      <if test="pmParentids != null" >
+        pm_parentids = #{pmParentids,jdbcType=VARCHAR},
+      </if>
+      <if test="pmStatus != null" >
+        pm_status = #{pmStatus,jdbcType=BIT},
+      </if>
+    </set>
+    where pm_id = #{pmId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.icenotu.entity.SysPermission" >
+    update sys_permission
+    set pm_name = #{pmName,jdbcType=VARCHAR},
+      pm_type = #{pmType,jdbcType=VARCHAR},
+      pm_url = #{pmUrl,jdbcType=VARCHAR},
+      pm_percode = #{pmPercode,jdbcType=VARCHAR},
+      pm_parentid = #{pmParentid,jdbcType=BIGINT},
+      pm_parentids = #{pmParentids,jdbcType=VARCHAR},
+      pm_status = #{pmStatus,jdbcType=BIT}
+    where pm_id = #{pmId,jdbcType=BIGINT}
+  </update>
+</mapper>

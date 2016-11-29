@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icenotu.dao.SysRolePermissionMapper" >
+  <resultMap id="BaseResultMap" type="com.icenotu.entity.SysRolePermission" >
+    <id column="rm_id" property="rmId" jdbcType="VARCHAR" />
+    <result column="rl_id" property="rlId" jdbcType="VARCHAR" />
+    <result column="pm_id" property="pmId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    rm_id, rl_id, pm_id
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_role_permission
+    where rm_id = #{rmId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByRlId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from sys_role_permission
+    where rl_id = #{rlId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from sys_role_permission
+    where rm_id = #{rmId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByRlId" parameterType="java.lang.String" >
+    delete from sys_role_permission
+    where rl_id = #{rlId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.icenotu.entity.SysRolePermission" >
+    insert into sys_role_permission (rm_id, rl_id, pm_id
+      )
+    values (#{rmId,jdbcType=VARCHAR}, #{rlId,jdbcType=VARCHAR}, #{pmId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertList" parameterType="SysUserRole" >
+    insert into sys_role_permission (rm_id, rl_id, pm_id
+    )
+    values
+    <foreach collection="list" separator="," item="item">
+      (#{item.rmId},#{item.rlId},#{item.pmId})
+    </foreach>
+  </insert>
+  <insert id="insertSelective" parameterType="com.icenotu.entity.SysRolePermission" >
+    insert into sys_role_permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="rmId != null" >
+        rm_id,
+      </if>
+      <if test="rlId != null" >
+        rl_id,
+      </if>
+      <if test="pmId != null" >
+        pm_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="rmId != null" >
+        #{rmId,jdbcType=VARCHAR},
+      </if>
+      <if test="rlId != null" >
+        #{rlId,jdbcType=VARCHAR},
+      </if>
+      <if test="pmId != null" >
+        #{pmId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.icenotu.entity.SysRolePermission" >
+    update sys_role_permission
+    <set >
+      <if test="rlId != null" >
+        rl_id = #{rlId,jdbcType=VARCHAR},
+      </if>
+      <if test="pmId != null" >
+        pm_id = #{pmId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where rm_id = #{rmId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.icenotu.entity.SysRolePermission" >
+    update sys_role_permission
+    set rl_id = #{rlId,jdbcType=VARCHAR},
+      pm_id = #{pmId,jdbcType=BIGINT}
+    where rm_id = #{rmId,jdbcType=VARCHAR}
+  </update>
+</mapper>

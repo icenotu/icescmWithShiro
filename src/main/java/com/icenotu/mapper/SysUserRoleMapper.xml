@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icenotu.dao.SysUserRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.icenotu.entity.SysUserRole" >
+    <result column="ur_id" property="urId" jdbcType="VARCHAR" />
+    <result column="us_id" property="usId" jdbcType="VARCHAR" />
+    <result column="rl_id" property="rlId" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="selectByUsId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT us_id,rl_id FROM sys_user_role
+    WHERE us_id = #{usId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByUsId" parameterType="java.lang.String">
+    DELETE FROM sys_user_role
+    WHERE us_id = #{usId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteAll">
+    DELETE FROM sys_user_role WHERE us_id IN
+    <foreach collection="array" open="(" close=")" separator="," item="pk">
+      #{pk}
+    </foreach>
+  </delete>
+  <insert id="insertList" parameterType="com.icenotu.entity.SysUserRole" >
+    insert into sys_user_role (ur_id, us_id, rl_id
+      )
+    values
+    <foreach collection="list" separator="," item="item">
+      (#{item.urId},#{item.usId},#{item.rlId})
+    </foreach>
+  </insert>
+  <insert id="insert" parameterType="com.icenotu.entity.SysUserRole" >
+    insert into sys_user_role (ur_id, us_id, rl_id
+      )
+    values (#{urId,jdbcType=VARCHAR}, #{usId,jdbcType=VARCHAR}, #{rlId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.icenotu.entity.SysUserRole" >
+    insert into sys_user_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="urId != null" >
+        ur_id,
+      </if>
+      <if test="usId != null" >
+        us_id,
+      </if>
+      <if test="rlId != null" >
+        rl_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="urId != null" >
+        #{urId,jdbcType=VARCHAR},
+      </if>
+      <if test="usId != null" >
+        #{usId,jdbcType=VARCHAR},
+      </if>
+      <if test="rlId != null" >
+        #{rlId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>
